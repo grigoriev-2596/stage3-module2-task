@@ -1,6 +1,7 @@
 package com.mjc.school.service.implementation;
 
 import com.mjc.school.repository.BaseRepository;
+import com.mjc.school.repository.model.AuthorModel;
 import com.mjc.school.repository.model.NewsModel;
 import com.mjc.school.service.dto.NewsDtoRequest;
 import com.mjc.school.service.dto.NewsDtoResponse;
@@ -20,12 +21,14 @@ import java.util.Optional;
 @Service
 public class NewsService implements BaseService<NewsDtoRequest, NewsDtoResponse, Long> {
     private final BaseRepository<NewsModel, Long> newsRepository;
+    private final BaseRepository<AuthorModel, Long> authorRepository;
     private final NewsManagementValidator newsValidator;
     private final NewsMapper newsMapper = Mappers.getMapper(NewsMapper.class);
 
     @Autowired
-    public NewsService(BaseRepository<NewsModel, Long> repository, NewsManagementValidator validator) {
+    public NewsService(BaseRepository<NewsModel, Long> repository, BaseRepository<AuthorModel, Long> authorRepository, NewsManagementValidator validator) {
         this.newsRepository = repository;
+        this.authorRepository = authorRepository;
         this.newsValidator = validator;
     }
 
@@ -39,7 +42,7 @@ public class NewsService implements BaseService<NewsDtoRequest, NewsDtoResponse,
         newsValidator.validateNewsId(id);
         Optional<NewsModel> maybeNullModel = newsRepository.readById(id);
         if (maybeNullModel.isEmpty()) {
-            throw new ServiceException(String.format(ErrorCode.NEWS_NOT_EXIST.toString(), id));
+            throw new ServiceException(String.format(ErrorCode.NEWS_DOES_NOT_EXIST.toString(), id));
         }
         return newsMapper.modelToDTOResponse(maybeNullModel.get());
     }
@@ -48,6 +51,9 @@ public class NewsService implements BaseService<NewsDtoRequest, NewsDtoResponse,
     public NewsDtoResponse create(NewsDtoRequest createRequest) {
         newsValidator.validateNewsRequest(createRequest);
         NewsModel model = newsMapper.DtoRequestToModel(createRequest);
+        if (!authorRepository.existById(model.getAuthorId())) {
+            throw new ServiceException(String.format(ErrorCode.AUTHOR_DOES_NOT_EXIST.toString(), model.getAuthorId()));
+        }
         LocalDateTime creationDate = LocalDateTime.now();
         model.setCreationDate(creationDate);
         model.setLastUpdateDate(creationDate);
@@ -63,7 +69,7 @@ public class NewsService implements BaseService<NewsDtoRequest, NewsDtoResponse,
         requestModel.setLastUpdateDate(LocalDateTime.now());
         NewsModel updateModel = newsRepository.update(requestModel);
         if (updateModel == null) {
-            throw new ServiceException(String.format(ErrorCode.NEWS_NOT_EXIST.toString(), updateRequest.getId()));
+            throw new ServiceException(String.format(ErrorCode.NEWS_DOES_NOT_EXIST.toString(), updateRequest.getId()));
         }
         return newsMapper.modelToDTOResponse(updateModel);
     }
@@ -72,7 +78,7 @@ public class NewsService implements BaseService<NewsDtoRequest, NewsDtoResponse,
     public boolean deleteById(Long id) {
         newsValidator.validateNewsId(id);
         if (!newsRepository.deleteById(id)) {
-            throw new ServiceException(String.format(ErrorCode.NEWS_NOT_EXIST.toString(), id));
+            throw new ServiceException(String.format(ErrorCode.NEWS_DOES_NOT_EXIST.toString(), id));
         }
         return true;
     }

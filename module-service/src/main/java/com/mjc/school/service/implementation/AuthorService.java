@@ -1,6 +1,7 @@
 package com.mjc.school.service.implementation;
 
 import com.mjc.school.repository.BaseRepository;
+import com.mjc.school.repository.aspect.OnDelete;
 import com.mjc.school.repository.model.AuthorModel;
 import com.mjc.school.service.dto.AuthorDtoRequest;
 import com.mjc.school.service.dto.AuthorDtoResponse;
@@ -39,7 +40,7 @@ public class AuthorService implements BaseService<AuthorDtoRequest, AuthorDtoRes
         authorValidator.validateAuthorId(id);
         Optional<AuthorModel> maybeNullModel = authorRepository.readById(id);
         if (maybeNullModel.isEmpty()) {
-            throw new ServiceException(String.format(ErrorCode.AUTHOR_NOT_EXIST.toString(), id));
+            throw new ServiceException(String.format(ErrorCode.AUTHOR_DOES_NOT_EXIST.toString(), id));
         }
         return authorMapper.modelToDTOResponse(maybeNullModel.get());
     }
@@ -63,16 +64,17 @@ public class AuthorService implements BaseService<AuthorDtoRequest, AuthorDtoRes
         requestModel.setLastUpdateDate(LocalDateTime.now());
         AuthorModel updateModel = authorRepository.update(requestModel);
         if (updateModel == null) {
-            throw new ServiceException(String.format(ErrorCode.AUTHOR_NOT_EXIST.toString(), updateRequest.getId()));
+            throw new ServiceException(String.format(ErrorCode.AUTHOR_DOES_NOT_EXIST.toString(), updateRequest.getId()));
         }
         return authorMapper.modelToDTOResponse(updateModel);
     }
 
     @Override
+    @OnDelete
     public boolean deleteById(Long id) {
         authorValidator.validateNewsId(id);
         if (!authorRepository.deleteById(id)) {
-            throw new ServiceException(String.format(ErrorCode.AUTHOR_NOT_EXIST.toString(), id));
+            throw new ServiceException(String.format(ErrorCode.AUTHOR_DOES_NOT_EXIST.toString(), id));
         }
         return true;
     }

@@ -1,6 +1,7 @@
 package com.mjc.school.repository.implementation;
 
 import com.mjc.school.repository.BaseRepository;
+import com.mjc.school.repository.aspect.OnDelete;
 import com.mjc.school.repository.model.AuthorModel;
 import com.mjc.school.repository.model.NewsModel;
 import com.mjc.school.repository.model.data.DataSource;
@@ -54,12 +55,11 @@ public class AuthorRepository implements BaseRepository<AuthorModel, Long> {
     }
 
     @Override
+    @OnDelete
     public boolean deleteById(Long id) {
         Optional<AuthorModel> maybeNullModel = readById(id);
         if (maybeNullModel.isEmpty()) return false;
         dataSource.getAuthors().remove(maybeNullModel.get());
-        List<NewsModel> newsToDelete = dataSource.getNews().stream().filter(news -> news.getAuthorId().equals(id)).toList();
-        dataSource.getNews().removeAll(newsToDelete);
         return true;
     }
 

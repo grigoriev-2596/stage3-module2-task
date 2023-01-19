@@ -18,8 +18,6 @@ public class DataSource {
     private static final String NEWS_CONTENT_FILE_NAME = "content";
     private static final String AUTHORS_FILE_NAME = "authors";
     private static final int AMOUNT_OF_LINES_TO_READ = 20;
-    private long lastNewsId = 1;
-    private long lastAuthorId = 1;
     private final List<NewsModel> news = new ArrayList<>();
     private final List<AuthorModel> authors = new ArrayList<>();
 
@@ -35,12 +33,6 @@ public class DataSource {
         return authors;
     }
 
-    public long getLastAuthorId() { return lastAuthorId; }
-
-    public long EgetLastNewsId() {
-        return lastNewsId;
-    }
-
     private void init() {
         readAuthors();
         List<AuthorModel> shuffledAuthors = new ArrayList<>(this.authors);
@@ -53,7 +45,7 @@ public class DataSource {
         LocalDateTime randomDate;
         for (int i = 0; i < AMOUNT_OF_LINES_TO_READ; i++) {
             randomDate = LinesReader.getRandomDate();
-            authors.add(new AuthorModel(lastAuthorId++, authorsLines.get(i), randomDate, randomDate));
+            authors.add(new AuthorModel((long) i + 1, authorsLines.get(i), randomDate, randomDate));
         }
     }
 
@@ -63,7 +55,7 @@ public class DataSource {
         LocalDateTime randomDate;
         for (int i = 0; i < AMOUNT_OF_LINES_TO_READ; i++) {
             randomDate = LinesReader.getRandomDate();
-            news.add(new NewsModel(lastNewsId++, titles.get(i), contents.get(i), randomDate, randomDate, authors.get(i).getId()));
+            news.add(new NewsModel((long) i + 1, titles.get(i), contents.get(i), randomDate, randomDate, authors.get(i).getId()));
         }
     }
 
