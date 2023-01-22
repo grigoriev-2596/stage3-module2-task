@@ -3,7 +3,6 @@ package com.mjc.school.repository.implementation;
 import com.mjc.school.repository.BaseRepository;
 import com.mjc.school.repository.aspect.OnDelete;
 import com.mjc.school.repository.model.AuthorModel;
-import com.mjc.school.repository.model.NewsModel;
 import com.mjc.school.repository.model.data.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
