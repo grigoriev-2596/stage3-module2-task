@@ -10,6 +10,8 @@ import com.mjc.school.service.dto.NewsDtoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class CommandFactory {
     private final BaseController<NewsDtoRequest, NewsDtoResponse, Long> newsController;
@@ -22,33 +24,47 @@ public class CommandFactory {
         this.authorController = authorController;
     }
 
-    public Command create(int commandCode, Object... params) {
-        switch (commandCode) {
-            case CommandConstants.CREATE_NEWS:
-                return new CreateCommand<>(newsController, new NewsDtoRequest(null, (String) params[0], (String) params[1], (Long) params[2]));
-            case CommandConstants.GET_ALL_NEWS:
-                return new ReadAllCommand<>(newsController);
-            case CommandConstants.GET_NEWS_BY_ID:
-                return new GetByIdCommand<>(newsController, (Long) params[0]);
-            case CommandConstants.UPDATE_NEWS:
-                return new UpdateCommand<>(newsController, new NewsDtoRequest((Long) params[0], (String) params[1], (String) params[2], (Long) params[3]));
-            case CommandConstants.DELETE_NEWS:
-                return new DeleteCommand<>(newsController, (Long) params[0]);
+    //news commands
+    public Command getCreateNewsCommand(String title, String content, Long authorId) {
+        return new CreateCommand<>(newsController, new NewsDtoRequest(null, title, content, authorId));
+    }
 
-            case CommandConstants.CREATE_AUTHOR:
-                return new CreateCommand<>(authorController, new AuthorDtoRequest(null, (String) params[0]));
-            case CommandConstants.GET_ALL_AUTHORS:
-                return new ReadAllCommand<>(authorController);
-            case CommandConstants.GET_AUTHOR_BY_ID:
-                return new GetByIdCommand<>(authorController, (Long) params[0]);
-            case CommandConstants.UPDATE_AUTHOR:
-                return new UpdateCommand<>(authorController, new AuthorDtoRequest((Long) params[0], (String) params[1]));
-            case CommandConstants.DELETE_AUTHOR:
-                return new DeleteCommand<>(authorController, (Long) params[0]);
-            default:
-                return null;
-        }
+    public Command getReadAllNewsCommand() {
+        return new ReadAllCommand<>(newsController);
+    }
 
+    public Command getReadNewsByIdCommand(Long id) {
+        return new GetByIdCommand<>(newsController, id);
+    }
+
+    public Command getUpdateNewsCommand(Long id, String name, String content, Long authorId) {
+        return new UpdateCommand<>(newsController, new NewsDtoRequest(id, name, content, authorId));
+    }
+
+    public Command getDeleteNewsCommand(Long id) {
+        return new DeleteCommand<>(newsController, id);
+    }
+
+
+    //author commands
+    public Command getCreateAuthorCommand(String name) {
+        return new CreateCommand<>(authorController, new AuthorDtoRequest(null, name));
+    }
+
+    public Command getReadAllAuthorsCommand() {
+        return new ReadAllCommand<>(authorController);
+    }
+
+    public Command getReadAuthorByIdCommand(Long id) {
+        return new GetByIdCommand<>(authorController, id);
+    }
+
+    public Command getUpdateAuthorCommand(Long id, String name) {
+        return new UpdateCommand<>(authorController, new AuthorDtoRequest(id, name));
+    }
+
+    public Command getDeleteAuthorCommand(Long id) {
+        return new DeleteCommand<>(authorController, id);
     }
 
 }

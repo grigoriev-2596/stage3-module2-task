@@ -1,6 +1,6 @@
 package com.mjc.school;
 
-import com.mjc.school.menu.NewsManagementMenu;
+import com.mjc.school.menu.MenuRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,7 +18,8 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(Main.class);
-        NewsManagementMenu menu = context.getBean(NewsManagementMenu.class);
-        menu.runMenu(new Scanner(System.in));
+        MenuRunner menu = context.getBean(MenuRunner.class);
+        menu.setScanner(new Scanner(System.in));
+        menu.runMenu();
     }
 }
